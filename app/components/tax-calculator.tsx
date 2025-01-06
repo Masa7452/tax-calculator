@@ -58,7 +58,7 @@ const TaxCalculator = () => {
   });
 
   // 申告種別による控除額の取得
-  const getDeductionAmount = (type) => {
+  const getDeductionAmount = (type: string) => {
     switch (type) {
       case 'blue-65': return 650000;  // 青色申告（65万円控除）
       case 'blue-10': return 100000;  // 青色申告（10万円控除）
@@ -79,7 +79,7 @@ const TaxCalculator = () => {
   ];
 
   // 入力値の更新ハンドラー
-  const handleInputChange = (field, value) => {
+  const handleInputChange = (field: string, value: string) => {
     const numValue = value === '' ? 0 : Number(value);
     setValues(prev => ({
       ...prev,
@@ -91,8 +91,14 @@ const TaxCalculator = () => {
   };
 
   // 所得税額の計算
-  const calculateIncomeTax = (taxableIncome) => {
+  const calculateIncomeTax = (taxableIncome: number): number => {
     const bracket = taxBrackets.find(b => taxableIncome <= b.limit);
+    
+    if (!bracket) {
+      const highestBracket = taxBrackets[taxBrackets.length - 1];
+      return Math.floor(taxableIncome * highestBracket.rate - highestBracket.deduction);
+    }
+    
     return Math.floor(taxableIncome * bracket.rate - bracket.deduction);
   };
 
@@ -129,7 +135,7 @@ const TaxCalculator = () => {
   }, [values]);
 
   // 金額のフォーマット
-  const formatCurrency = (amount) => {
+  const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ja-JP', {
       style: 'currency',
       currency: 'JPY'
